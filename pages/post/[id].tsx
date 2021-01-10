@@ -1,37 +1,35 @@
 import React, { FunctionComponent } from "react";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { Post as PostType } from "../../shared/types";
-import { GetStaticProps } from "next";
 import { fetchPost } from "../../api/post";
-import { postPaths } from "../../shared/staticPaths";
-import { PostBody } from "../../components/Post/PostBody";
+import { fetchComments } from "../../api/comments";
+import { Post as PostType, Comment } from "../../shared/types";
 import { Loader } from "../../components/Loader";
+import { PostBody } from "../../components/Post/PostBody";
+import { Comments } from "../../components/Comments";
 
 interface PostProps {
   post: PostType;
+  comments: Comment[];
 }
 
-export const getStaticProps: GetStaticProps<PostProps> = async ({ params }) => {
-  if (typeof params.id !== "string") {
-    throw new Error("Unexpected id");
-  }
-
+export const getServerSideProps = async ({ params }) => {
+  if (typeof params.id !== "string") throw new Error("Unexpected id");
   const post = await fetchPost(params.id);
-  return { props: { post } };
+  const comments = await fetchComments(params.id);
+  return { props: { post, comments } };
 };
 
-export const getStaticPaths = async () => {
-  return { paths: postPaths, fallback: true };
-};
-
-const Post: FunctionComponent<PostProps> = ({ post }) => {
+const Post: FunctionComponent<PostProps> = ({ post, comments }) => {
   const router = useRouter();
 
-  if (router.isFallback) {
-    return <Loader />;
-  }
-
-  return <PostBody post={post} />;
+  if (router.isFallback) return <Loader />;
+  return (
+    <>
+      <PostBody post={post} />
+      <Comments comments={comments} post={post.id} />
+    </>
+  );
 };
 
 export default Post;
