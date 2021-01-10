@@ -1,21 +1,21 @@
 import Link from "next/link";
 import React, { FunctionComponent } from "react";
-import { Card, Content, Figure, Title } from "./style";
+import { Card, Figure, Lead, Title } from "./style";
+import { Post as PostType } from "../../shared/types";
 
-export const Post: FunctionComponent = () => {
+interface PostProps {
+  post: PostType;
+}
+
+export const Post: FunctionComponent<PostProps> = ({ post }) => {
   return (
-    <Link href="/post/[id]" as="/post/example" passHref>
+    <Link href="/post/[id]" as={`/post/${post.id}`} passHref>
       <Card>
         <Figure>
-          <img alt="Post Photo" src="/image1.jpg" />
+          <img alt={post.title} src={post.image} />
         </Figure>
-        <Title>Post title!</Title>
-        <Content>
-          <p>
-            This is just a bunch of random text that probably makes no sense
-            because it is not intended to make sense.
-          </p>
-        </Content>
+        <Title>{post.title}</Title>
+        <Lead>{post.lead}</Lead>
       </Card>
     </Link>
   );
