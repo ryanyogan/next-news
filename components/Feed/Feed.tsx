@@ -20,6 +20,7 @@ export const Feed: FunctionComponent<FeedProps> = ({ posts, categories }) => {
             key={currentCategory}
             title={currentCategory}
             posts={inSection}
+            isCompact
           />
         );
       })}
